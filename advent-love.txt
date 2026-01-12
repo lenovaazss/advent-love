@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Bizim Takvimimiz ❤️</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+/* KALPLER */
+.heart {
+    position: fixed;
+    bottom: -20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 20px;
+    animation: float 6s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    max-width: 600px;
+    width: 90%;
+}
+
+.day {
+    background: rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.day.opened {
+    background: rgba(0,0,0,0.5);
+    cursor: default;
+}
+
+.note {
+    margin: 20px;
+    padding: 20px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 15px;
+    max-width: 600px;
+}
+
+.note img {
+    max-width: 100%;
+    border-radius: 15px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎁 Her Gün Sana Bir Parça Biz</h1>
+<p>Her gün sadece bir tane ❤️</p>
+
+<div class="calendar" id="calendar"></div>
+<div class="note" id="note">Bir günü seç ✨</div>
+
+<audio id="openSound" src="open.mp3"></audio>
+
+<script>
+const notes = [
+ "Bugün seni düşündüğümde gülümsedim.",
+ "Hayatıma iyi ki girdin.",
+ "Sen benim huzurumsun.",
+ "Yanındayken her şey daha güzel.",
+ "Gülüşün bana iyi geliyor.",
+ "Seni sevmek çok kolay.",
+ "Kalbimde yerin çok özel.",
+ "Birlikteyken zaman duruyor.",
+ "Sen benim en güzel alışkanlığımsın.",
+ "Sana her gün yeniden aşık oluyorum.",
+ "Varlığın yetiyor.",
+ "Seni düşünmek bile mutlu ediyor.",
+ "Yanımda olmasan da hep benimlesin.",
+ "Gelecek seni düşününce güzel.",
+ "İyi ki varsın.",
+ "İyi ki benimlesin.",
+ "Kalbim sana emanet.",
+ "Sana sarılmayı özledim.",
+ "Birlikte yaşlanalım mı?",
+ "Sen benim mucizemsin.",
+ "Seni sevmek cesaret işi.",
+ "İyi ki seni seçmişim.",
+ "Her halinle seni seviyorum.",
+ "SON GÜN"
+];
+
+const calendar = document.getElementById("calendar");
+const noteDiv = document.getElementById("note");
+const sound = document.getElementById("openSound");
+
+let opened = JSON.parse(localStorage.getItem("openedDays")) || [];
+let lastTime = localStorage.getItem("lastOpenTime");
+
+function canOpen() {
+    if (!lastTime) return true;
+    return Date.now() - lastTime > 86400000;
+}
+
+for (let i = 0; i < 24; i++) {
+    const d = document.createElement("div");
+    d.className = "day";
+    d.innerText = i + 1;
+
+    if (opened.includes(i)) d.classList.add("opened");
+
+    d.onclick = () => {
+        if (!opened.includes(i) && !canOpen()) {
+            noteDiv.innerText = "⏳ 24 saat beklemelisin";
+            return;
+        }
+
+        if (!opened.includes(i)) {
+            opened.push(i);
+            localStorage.setItem("openedDays", JSON.stringify(opened));
+            localStorage.setItem("lastOpenTime", Date.now());
+            sound.play();
+            d.classList.add("opened");
+        }
+
+        if (i === 23) {
+            noteDiv.innerHTML = `
+            <h2>❤️ Seni Seviyorum ❤️</h2>
+            <p>İyi ki benimlesin. Hayatımın en güzel yerindesin.</p>
+            <img src="photo24.jpg">
+            `;
+        } else {
+            noteDiv.innerHTML = `
+            <p>${notes[i]}</p>
+            <img src="photo${i+1}.jpg">
+            `;
+        }
+    };
+
+    calendar.appendChild(d);
+}
+
+/* KALP OLUŞTUR */
+setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "❤️";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = Math.random() * 15 + 15 + "px";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 6000);
+}, 400);
+</script>
+
+</body>
+</html>
